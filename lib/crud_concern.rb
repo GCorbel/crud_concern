@@ -2,7 +2,7 @@ module CrudConcern
   extend ActiveSupport::Concern
 
   def index
-    render json: resource, include: inclusions, meta: meta
+    render json: resources, include: inclusions, meta: meta
   end
 
   def show
@@ -35,12 +35,12 @@ module CrudConcern
 
   private
 
+  def resources
+    scope.order(params[:sort])
+  end
+
   def resource
-    @resource ||= if params[:id]
-      klass.unscoped.find(params[:id])
-    else
-      scope.order(params[:sort])
-    end
+    @resource ||= params[:id] ? klass.find(params[:id]) : klass.new(attributes)
   end
 
   def scope
